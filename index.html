@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f3ede1">
+<title>KRIAA</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Montserrat:wght@500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="site-header">
+<button class="mobile-menu" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+<a class="logo" onclick="show('home')">KRIAA</a>
+<nav id="mainNav">
+<button onclick="show('home')" data-i18n="home">الرئيسية</button>
+<button onclick="show('shop')" data-i18n="shop">المتجر</button>
+<button onclick="show('portfolio')" data-i18n="portfolio">PORTE FELY0</button>
+<button id="loginButton" onclick="openLogin()" data-i18n="login">تسجيل الدخول</button>
+<button id="adminButton" class="admin-nav-button" onclick="openAdminDashboard()">Admin</button>
+<button id="logoutButton" class="logout-button" onclick="logout()" data-i18n="logout">تسجيل الخروج</button>
+<select id="languageSelect" onchange="changeLanguage(this.value)">
+<option value="ar">العربية</option><option value="fr">Français</option><option value="en">English</option>
+</select>
+</nav>
+</header>
+
+<main>
+<section id="home" class="page active">
+<div class="hero">
+<div class="hero-content">
+<span class="eyebrow">KRIAA</span>
+<h1 data-i18n="heroTitle">ملابس بتفاصيل مختلفة</h1>
+<p data-i18n="heroText">اكتشف قطع KRIAA بتصاميم بسيطة، فخمة ومميزة.</p>
+<button class="primary-btn" onclick="show('shop')" data-i18n="discover">اكتشف المتجر →</button>
+</div>
+</div>
+</section>
+
+<section id="shop" class="page">
+<div class="section-heading">
+<span class="eyebrow">KRIAA CLOTHING</span>
+<h2 data-i18n="shopTitle">المتجر</h2>
+<p data-i18n="shopText">اختر القطعة والمقاس المناسب لك.</p>
+</div>
+<div class="tools-row">
+<div class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Rechercher un vêtement…" oninput="renderProducts()"></div>
+</div>
+<div id="categories" class="categories">
+<button class="category-btn active" data-category="all" onclick="setCategory('all')">TOUT</button>
+<button class="category-btn" data-category="tshirts" onclick="setCategory('tshirts')">T-SHIRTS</button>
+<button class="category-btn" data-category="hoodies" onclick="setCategory('hoodies')">HOODIES</button>
+<button class="category-btn" data-category="autres" onclick="setCategory('autres')">AUTRES</button>
+</div>
+<div id="productsContainer" class="products-grid"></div>
+</section>
+
+<section id="portfolio" class="page">
+<div class="section-heading"><span class="eyebrow">KRIAA</span><h2>NOS CRÉATIONS</h2><p data-i18n="portfolioText">المواقع والتصاميم والمشاريع التي صنعتها KRIAA.</p></div>
+<div id="portfolioContainer" class="portfolio-grid"></div>
+</section>
+
+<div id="loginModal" class="modal">
+<div class="modal-box">
+<button class="close-modal" onclick="closeLogin()">×</button>
+<span class="eyebrow">KRIAA</span><h2 data-i18n="loginTitle">تسجيل الدخول</h2>
+<input id="usernameInput" type="text" placeholder="اسم المستخدم">
+<input id="passwordInput" type="password" placeholder="كلمة المرور">
+<button class="primary-btn full" onclick="login()" data-i18n="login">تسجيل الدخول</button>
+<p id="loginMessage"></p>
+</div>
+</div>
+
+<div id="orderModal" class="modal">
+<div class="modal-box order-box">
+<button class="close-modal" onclick="closeOrder()">×</button>
+<span class="eyebrow">KRIAA ORDER</span>
+<h2 id="orderTitle">طلب القطعة</h2>
+<p id="orderSummary" class="order-summary"></p>
+<div id="orderFormFields">
+<label>الاسم <span class="required">*</span></label>
+<input id="orderUsername" placeholder="اسم العميل">
+<label>المقاس / Taille <span class="required">*</span></label>
+<select id="orderSize"></select>
+<label>WhatsApp <span class="required">*</span></label>
+<input id="orderWhatsApp" type="tel" placeholder="216XXXXXXXX">
+<label>ملاحظات إضافية</label>
+<textarea id="orderNotes" rows="3" placeholder="اللون، مكان التسليم، ملاحظات..."></textarea>
+<div class="order-total"><span>السعر</span><strong id="orderTotal">—</strong></div>
+<button class="primary-btn full" onclick="reviewOrder()">مراجعة الطلب</button>
+<p id="orderMessage"></p>
+</div>
+<div id="orderReview" class="order-review" style="display:none">
+<h3>مراجعة الطلب</h3><div id="orderReviewContent"></div>
+<div class="review-actions">
+<button class="secondary-btn" onclick="backToOrderForm()">تعديل</button>
+<button class="primary-btn" onclick="confirmAndSendOrder()">تأكيد وإرسال عبر WhatsApp</button>
+</div>
+</div>
+</div>
+</div>
+
+<section id="adminDashboard" class="page admin-page">
+<div class="admin-header"><div><span class="eyebrow">KRIAA ADMIN</span><h2>Admin Dashboard</h2><p class="admin-note">إدارة الملابس والطلبات والصور وPORTE FELY0.</p></div><button class="secondary-btn" onclick="show('shop')">العودة للمتجر</button></div>
+<div class="admin-tabs">
+<button class="admin-tab active" onclick="openAdminTab('ordersAdmin',this)">ORDERS</button>
+<button class="admin-tab" onclick="openAdminTab('productsAdmin',this)">CLOTHES</button>
+<button class="admin-tab" onclick="openAdminTab('portfolioAdmin',this)">PORTFOLIO</button>
+<button class="admin-tab" onclick="openAdminTab('settingsAdmin',this)">SETTINGS</button>
+</div>
+
+<div id="ordersAdmin" class="admin-content active"><div class="admin-panel"><div class="admin-panel-heading"><div><h3>📦 Commandes</h3><p class="admin-note">طلبات الملابس المحفوظة في هذا المتصفح.</p></div><button class="secondary-btn" onclick="renderAdminOrders()">تحديث</button></div><div id="adminOrders"></div></div></div>
+
+<div id="productsAdmin" class="admin-content">
+<div class="admin-panel">
+<h3>➕ إضافة قطعة ملابس</h3>
+<input id="newProductName" placeholder="اسم القطعة">
+<input id="newProductPrice" placeholder="السعر مثال: 45 DT">
+<input id="newProductOldPrice" placeholder="السعر القديم اختياري">
+<input id="newProductImage" type="url" placeholder="رابط الصورة اختياري">
+<label class="file-label">Upload Product Image<input id="newProductImageFile" type="file" accept="image/*"></label>
+<input id="newProductDescription" placeholder="الوصف">
+<select id="newProductCategory"><option value="tshirts">T-SHIRTS</option><option value="hoodies">HOODIES</option><option value="autres">AUTRES</option></select>
+<label>المقاسات المتاحة</label>
+<input id="newProductSizes" placeholder="S, M, L, XL, XXL">
+<label class="check-row"><input id="newProductBadge" type="checkbox"> تفعيل Badge</label>
+<input id="newProductBadgeText" placeholder="PROMO / NOUVEAU / RÉDUCTION">
+<button class="admin-add-button" onclick="addProduct()">إضافة القطعة</button>
+</div>
+<div class="admin-panel"><h3>👕 القطع الحالية</h3><div id="adminProducts"></div></div>
+</div>
+
+<div id="portfolioAdmin" class="admin-content">
+<div class="admin-panel">
+<h3>➕ إضافة مشروع PORTE FELY0</h3>
+<input id="portfolioName" placeholder="اسم المشروع"><input id="portfolioDescription" placeholder="وصف المشروع"><input id="portfolioUrl" type="url" placeholder="رابط الموقع"><input id="portfolioYear" placeholder="السنة">
+<label class="file-label">Upload Thumbnail<input id="portfolioImageFile" type="file" accept="image/*"></label>
+<input id="portfolioImageUrl" type="url" placeholder="رابط Thumbnail اختياري">
+<button class="admin-add-button" onclick="addPortfolioProject()">إضافة المشروع</button>
+</div>
+<div class="admin-panel"><h3>Portfolio Projects</h3><div id="adminPortfolio"></div></div>
+</div>
+
+<div id="settingsAdmin" class="admin-content">
+<div class="admin-panel"><h3>⚙️ Settings</h3><p class="admin-note">المقاسات الافتراضية التي تظهر للقطع الجديدة.</p><input id="defaultSizes" placeholder="S, M, L, XL, XXL" onchange="saveSettings()"></div>
+<div class="admin-panel"><h3>🔐 Admin Password</h3><input id="currentAdminPassword" type="password" placeholder="كلمة السر الحالية"><input id="newAdminPassword" type="password" placeholder="كلمة السر الجديدة"><input id="confirmAdminPassword" type="password" placeholder="تأكيد كلمة السر الجديدة"><button class="admin-add-button" onclick="changeAdminPassword()">تغيير كلمة السر</button><p class="admin-note security-warning">هذه نسخة GitHub Pages تعتمد على localStorage؛ الحماية الحقيقية تحتاج Backend/Auth.</p></div>
+</div>
+</section>
+</main>
+
+<footer><strong>KRIAA</strong><p>© 2026 KRIAA. Tous droits réservés.</p><div class="footer-links"><button onclick="show('home')">Home</button><button onclick="show('shop')">Shop</button><button onclick="show('portfolio')">Portfolio</button></div></footer>
+<div class="whatsapp-float" onclick="whatsapp()" aria-label="WhatsApp">◔</div>
+<script src="script.js"></script>
+</body>
+</html>
